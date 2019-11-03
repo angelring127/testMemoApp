@@ -21,7 +21,7 @@ class LabelList extends React.Component {
 
 
   componentDidMount() {
-    console.log('fetchLabelList');
+    // console.log('fetchLabelList');
     this.fetchLabelList();
   }
 
@@ -53,7 +53,6 @@ class LabelList extends React.Component {
         labels: res[0].data,
         fetching: false  //done!;
       })
-      console.log(this.state.labels);
     } catch (error) {
       
     }

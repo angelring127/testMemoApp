@@ -21,7 +21,7 @@ class MemoList extends React.Component {
 
 
   componentDidMount() {
-    console.log('fetchMemoList');
+    // console.log('fetchMemoList');
     this.fetchMemoList();
   }
 

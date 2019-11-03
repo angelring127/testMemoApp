@@ -1,10 +1,10 @@
-import Header from './Header/Header';
 import LabelList from './LabelList/LabelList';
 import MemoList from './MemoList/MemoList';
+import * as CC from './CommonComponent';
 
 
 export {
-  Header,
   LabelList,
-  MemoList
+  MemoList,
+  CC
 };

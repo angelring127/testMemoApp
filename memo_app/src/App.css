@@ -1,5 +1,6 @@
 .App {
-  text-align: center;
+  width: 100%;
+  height: 100vh;
 }
 
 .App-logo {
@@ -20,3 +21,8 @@
 .App-link {
   color: #09d3ac;
 }
+
+.LabelList {
+  overflow:auto;
+}
+

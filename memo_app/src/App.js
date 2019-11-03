@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { LabelList, MemoList} from './components'
+import 'semantic-ui-css/semantic.min.css'
+import './App.css';
+import LabelsContainer from './containers/LabelsContainer';
+import MemoContainer from './containers/MemoContainer';
 
 
 class App extends Component {
   render() {
     return (
-      <div>
-        <LabelList />
-        <MemoList/>
+      <div className="App">
+        <LabelsContainer className='ui'/>
+        <MemoContainer />
       </div>
     );
   }

@@ -14,8 +14,6 @@ function NumberList(props) {
   const numberList = numbers.map((number) =>
     <ListItem key={number.toString()} value={number}/>
   );
-
-
   return (
     <ul>{numberList}</ul>
   );  

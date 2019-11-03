@@ -1,70 +1,60 @@
 import React from 'react';
 import './MemoList.css';
-import Header from '../Header/Header';
+import { Input, Table } from 'semantic-ui-react';
 import * as service from '../../services/API';
+
 
 class MemoList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      postId: 1,
-      fetching: false, // tells whether the request is waiting for response or not
-      post: {
-        title: null,
-        body: null
-      },
-      labels: [],
-      warningVisibility: false
-    };
+    this.shouldComponentRender = this.shouldComponentRender.bind(this);
   }
 
-
-
-  componentDidMount() {
-    // console.log('fetchMemoList');
-    this.fetchMemoList();
-  }
-
-  showWarning = () => {
-    this.setState({
-      warningVisibility: true
-    });
-
-    // after 1.5 sec
-
-    setTimeout(
-      () => {
-        this.setState({
-          warningVisibility: false
-        });
-      }, 1500
-    );
-  }
-
-  fetchMemoList = async () => {
-    this.setState({
-      fetching: true
-    });
-
-    try {
-      const res = await Promise.all([service.getMemos()]);
-      
-      this.setState({
-        labels: res[0].data,
-        fetching: false  //done!;
-      });
-    } catch (error) {
-      
-    }
+  shouldComponentRender() {
+    const { pending } = this.props;
+    if (pending === false) return false;
+    return true;
   }
 
   render() {
+    const { memos, error, pending } = this.props;
     return (
       <div className="MemoList">
-        <Header title="Memo"/>
+        <MemoItems memos= { memos }/>
       </div>
     );
   }
+}
+
+
+function MemoItem(props) {
+  const {title} = props.memo;
+  return (
+    <Table.Row>
+      <Table.Cell>
+        {title}
+      </Table.Cell>
+    </Table.Row>
+  );
+}
+
+function MemoItems(props) {
+  const memos = props.memos;
+  const memoList = memos.map((memo) =>
+    <MemoItem key={memo._id} memo={memo} />
+  );
+  return (
+    <Table>
+      <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell >Memo</Table.HeaderCell>
+      </Table.Row>
+    </Table.Header>
+      <Table.Body>
+        {memoList}
+      </Table.Body>
+    </Table>
+  );
 }
 
 export default MemoList;

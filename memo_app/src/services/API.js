@@ -34,6 +34,10 @@ export const getLabels = () => {
   return axios.get(baseURL + labels);
 }
 
+export const getLabel = (id) => {
+  return axios.get(baseURL + labels + '/' + id);
+}
+
 export const addLabel = (title) => {
   return axios.post(baseURL + labels, {
     title: title

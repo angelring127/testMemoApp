@@ -1,8 +1,6 @@
 import React from 'react';
 import './LabelList.css';
-import { Icon, Table, Button, Input } from 'semantic-ui-react';
-import * as CC from '../CommonComponent';
-import * as service from '../../services/API';
+import {Table, Button, Input } from 'semantic-ui-react';
 
 class LabelList extends React.Component {
   constructor(props) {
@@ -26,6 +24,10 @@ class LabelList extends React.Component {
     }
   }
 
+  handleDeleteLabel = id => {
+
+  }
+
   shouldComponentRender() {
     const { pending } = this.props;
     if (this.pending === false) return false;
@@ -33,7 +35,7 @@ class LabelList extends React.Component {
   }
 
   render() {
-    const { labels, error, pending, handleAddLabel } = this.props;
+    const { labels, handleDeleteLabel, handleGetLabel } = this.props;
     if (!this.shouldComponentRender()) {
       return (
         <div className="LabelList">
@@ -42,7 +44,12 @@ class LabelList extends React.Component {
     }
     return (
       <div className="LabelList">
-        <LabelItems labels={labels} handleAddLabel={this.handleAddLabel} updateTitle={this.updateTitle} title={this.state.title}/>
+        <LabelItems labels={labels} 
+                    handleAddLabel={this.handleAddLabel} 
+                    updateTitle={this.updateTitle} 
+                    title={this.state.title}
+                    handleDeleteLabel={handleDeleteLabel}
+                    handleGetLabel={handleGetLabel}/>
       </div>
     );
   }
@@ -53,8 +60,8 @@ function LabelItem(props) {
   const title = props.title;
   return (
     <Table.Row>
-      <Table.Cell>
-        <span>{title}</span><Button icon='minus' className='danger'/>
+      <Table.Cell className='active' onClick={e => props.handleGetLabel(props.id)}>
+        <span>{title}</span><Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus'/>
       </Table.Cell>
     </Table.Row>
   );
@@ -63,7 +70,11 @@ function LabelItem(props) {
 function LabelItems(props) {
   const labels = props.labels;
   const labelList = labels.map((label) =>
-    <LabelItem key={label._id} title={label.title} />
+    <LabelItem key={label._id} 
+                id={label._id} 
+                title={label.title} 
+                handleDeleteLabel={props.handleDeleteLabel}
+                handleGetLabel={props.handleGetLabel}/>
   );
   return (
     <Table>

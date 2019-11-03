@@ -1,6 +1,7 @@
 import { fetchLabelsPending, fetchLabelsSuccess, fetchLabelsError } from '../store/modules/labels';
 import * as services from '../services/API';
 
+
 export const fetchLabels = () => {
     return dispatch => {
         dispatch(fetchLabelsPending());
@@ -39,11 +40,28 @@ export const deleteLabel = (id) => {
     return dispatch => {
         dispatch(fetchLabelsPending());
         services.deleteLabel(id).
-            then(function(res){
+            then(function(res) {
                 if (res.error) {
                     throw (res.error);
                 }
                 dispatch(fetchLabels());
+                return res.data;
+            })
+            .catch(error => {
+                dispatch(fetchLabelsError(error));
+            })
+    }
+}
+
+export const getLabel = (id) => {
+    return dispatch => {
+        dispatch(fetchLabelsPending());
+        services.getLabel(id).
+            then(function(res){
+                if (res.error) {
+                    throw (res.error);
+                }
+                console.log(res);
                 return res.data;
             })
             .catch(error => {

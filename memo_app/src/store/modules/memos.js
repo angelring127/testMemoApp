@@ -6,6 +6,7 @@ export const TOTAL_MEMOS = 'TOTAL_MEMOS';
 export const GET_MEMO = 'GET_MEMO';
 export const ADD_MEMO = "ADD_MEMO";
 export const IS_CREATE_MEMO = 'CREATE_MEMO';
+export const IS_EDIT_MEMO = 'IS_EDIT_MEMO';
 
 //  액션 생성함수 정의 
 export const fetchMemosPending = () => ({ type: FETCH_MEMOS_PENDING });
@@ -14,6 +15,7 @@ export const fetchMemosError = (error) => ({ type: FETCH_MEMOS_ERROR, error: err
 export const addMemo = title => ({ type: ADD_MEMO, payload: { title }});
 export const totalMemos = total => ({type: TOTAL_MEMOS, payload: { total }});
 export const isCreateMemo = (isCreateMemo) => ({ type: IS_CREATE_MEMO, payload: { isCreateMemo}});
+export const isEditMemo = (isEditMemo) => ({ type: IS_EDIT_MEMO, payload: { isEditMemo }});
 export const getMemo = memo => ({ type: GET_MEMO, payload: { memo }});
 
 // 초기상태 정의
@@ -24,6 +26,7 @@ const initialState = {
     total: null,
     currentMemo: null,
     isCreateMemo: false,
+    isEdit: false,
 }
 
 export default function memos(state = initialState, action) {
@@ -59,6 +62,11 @@ export default function memos(state = initialState, action) {
             return {
                 ...state,
                 isCreateMemo: action.payload.isCreateMemo
+            }
+        case IS_EDIT_MEMO:
+            return {
+                ...state,
+                isEditMemo: action.payload.isEditMemo
             }
         default:
             return state;

@@ -7,7 +7,6 @@ class Memo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEdit: true,
             title: '',
             content: '',
             selectedId: null,
@@ -15,8 +14,9 @@ class Memo extends React.Component {
         }
 
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleCreateMemo = this.handleCreateMemo.bind(this);
+        this.handleSetMemo = this.handleSetMemo.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.triggerIsEdit = this.triggerIsEdit.bind(this);
     }
 
     handleInputChange(event) {
@@ -28,18 +28,42 @@ class Memo extends React.Component {
             [name]: value
         });
     }
-
-    handleCreateMemo() {
-        const { handlePack } = this.props;
-        if (this.state.title.trim()　=== "" ) {
-            this.handleOpen();
-        } else {
-            const memo = {
-                title : this.state.title,
-                content : this.state.content
-            };
-            handlePack.addMemo(memo);
+    componentDidUpdate(previousProps, previousState){
+        if (previousProps.memo !== this.props.memo) {
+            const { memo } = this.props;
+            if (memo !== null){
+                this.setState ({ title: memo.title,
+                                selectedId: memo._id,
+                                content: memo.content,
+                            });
+            }
         }
+    }
+
+    handleSetMemo(event) {
+        const { handlePack, memo } = this.props;
+        const target = event.target;
+        const eventName = target.name;
+        if (eventName === 'create') {
+            if (this.state.title.trim()　=== "" ) {
+                this.handleOpen();
+            } else {
+                const memo = {
+                    title : this.state.title,
+                    content : this.state.content
+                };
+                handlePack.addMemo(memo);
+            }
+        } else if(eventName === 'edit') {
+            console.log('handle edit');
+            const editMemo = {
+                id: memo._id,
+                title: this.state.title,
+                content: this.state.content,
+            }
+            handlePack.editMemo(editMemo);
+        }
+        
     }
 
     // 모달 핸들링
@@ -47,37 +71,50 @@ class Memo extends React.Component {
 
     handleClose = () => this.setState({ modalOpen: false })
 
+    // 수전 화면 전환
+    triggerIsEdit = () => {
+        const { isEditMemo, handlePack } = this.props;
+        handlePack.setEditMemo(!isEditMemo);
+    };
+
     render() {
-        const { memo, isCreateMemo } = this.props;
+        const { memo, isCreateMemo, handlePack, isEditMemo } = this.props;
         let memoTitle, title, dated, content, actionButton;
 
         if( isCreateMemo ) {
             title = 'Create Memo';
-            memoTitle = <TableCell>Title <Input fluid={true} placeholder='Title' onChange={this.handleInputChange}　name='title'　/></TableCell>
+            memoTitle = <TableCell>Title <Input className='fluid' placeholder='Title' onChange={this.handleInputChange}　name='title'　/></TableCell>
             content = <Form><TextArea placeholder='Content' onChange={this.handleInputChange} name='content' /></Form>
-            actionButton = <TableRow><TableCell><Button className='right floated' onClick={this.handleCreateMemo} content='Create' primary/></TableCell></TableRow>
+            actionButton = <TableRow><TableCell><Button className='right floated' onClick={this.handleSetMemo} name='create' content='Create' primary/></TableCell></TableRow>
         } else if (memo !== null) {
-            if(this.state.isEdit) {
+            if(isEditMemo) {
                  // 메모 수정 
-                memoTitle = <Table.Cell>Title <Input placeholder='Title' fluid={true} value={memo.title}/> </Table.Cell>;
+                memoTitle = <Table.Cell>Title 
+                                <Input placeholder='Title' value={this.state.title} onChange={this.handleInputChange}　name='title' /> 
+                            </Table.Cell>;
                 content =   <Form>
-                                <TextArea placeholder='Content'  fluid={true}/>
+                                <TextArea placeholder='Content' onChange={this.handleInputChange} name='content' value={this.state.content} />
                             </Form>;
-                title = 'Edit Memo';
-                actionButton = <TableRow><TableCell><Button className='right floated' content='Edit' primary/></TableCell></TableRow>
+                title =  <div>Edit Memo <Button content='Edit' onClick={this.triggerIsEdit} className='right floated orange mini' /></div>;
+                actionButton = <TableRow><TableCell><Button className='right floated' content='Edit' onClick={this.handleSetMemo} name='edit' primary/></TableCell></TableRow>
             } else {
                 // 메모가 선택된경우
-                title = 'Memo';
+                title = <div> 
+                            Memo
+                            <Button content='Edit' onClick={this.triggerIsEdit} className='right floated orange mini' />
+                            <Button onClick={e => handlePack.deleteMemo(memo._id)} className='right floated red mini '>Delete</Button>
+                        </div>;
                 memoTitle = <Table.Cell>
                                 {memo.title}
-                                <Button className='right floated red mini '>삭제</Button>
                             </Table.Cell>;
                 dated = <Table.Row>
                             <TableCell textAlign='right'>
                                 작성일 :{memo.updatedAt}
                             </TableCell>
                         </Table.Row>;
-                content = memo.content;
+                content = memo.content.split('\n').map((item, key) => {
+                    return <span key={key}>{item}<br/></span>
+                  });
             }
         } else {
             title = 'Memo'; 

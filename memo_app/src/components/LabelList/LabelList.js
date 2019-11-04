@@ -63,7 +63,8 @@ function LabelItem(props) {
   return (
     <Table.Row>
       <Table.Cell className='active' onClick={e => props.handleGetLabel(props.id)}>
-        <span>{props.title}({props.length})</span><Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus' />
+        <span>{props.title}({props.length})</span>
+        <Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus' className='right floated mini red'/>
       </Table.Cell>
     </Table.Row>
   );

@@ -1,4 +1,4 @@
-import { fetchMemosPending, fetchMemosSuccess, fetchMemosError, totalMemos } from '../store/modules/memos';
+import * as storeMemos from '../store/modules/memos';
 import * as services from '../services/API';
 
 
@@ -6,43 +6,56 @@ import * as services from '../services/API';
 export const fetchMemos = () => {
     console.log('fetchMemos');
     return dispatch => {
-        dispatch(fetchMemosPending());
+        dispatch(storeMemos.fetchMemosPending());
         services.getMemos()
             .then(function (res) {
                 if (res.error) {
                     throw (res.error);
                 }
-                dispatch(fetchMemosSuccess(res.data));
-                dispatch(totalMemos(res.data.length));
+                dispatch(storeMemos.fetchMemosSuccess(res.data));
+                dispatch(storeMemos.totalMemos(res.data.length));
                 return res.data;
             })
             .catch(error => {
-                dispatch(fetchMemosError(error));
+                dispatch(storeMemos.fetchMemosError(error));
             })
     }
 }
 
+// 메모리스트에서 선택해서 상세 메모 습득
 export const getMemo = (id) => {
     return dispatch => {
-        dispatch(fetchMemosPending());
+        dispatch(storeMemos.fetchMemosPending());
         services.getMemo(id)
                 .then(function(res) {
                     if (res.error) {
                         throw (res.error);
                     }
-                    console.log(res);
-
+                    dispatch(storeMemos.isCreateMemo(false));
+                    dispatch(storeMemos.getMemo(res.data));
                     return res
                 })
                 .catch(error => {
-                    dispatch(fetchMemosError(error));
+                    dispatch(storeMemos.fetchMemosError(error));
                 })
     }
 }
 
-export const addMemos = () => {
+export const addMemo = (memo) => {
     return dispatch => {
-        dispatch(fetchMemosPending());
+        dispatch(storeMemos.fetchMemosPending());
+        services.addMemo(memo.title, memo.content)
+            .then(function(res){
+                if (res.error) {
+                    throw (res.error);
+                }
+                dispatch(storeMemos.isCreateMemo(false));
+                dispatch(storeMemos.getMemo(res.data));
+                dispatch(fetchMemos());
+            })
+            .catch(error => {
+                dispatch(storeMemos.fetchMemosError(error));
+            })
     }
 }
 

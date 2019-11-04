@@ -12,7 +12,7 @@ class LabelsContainer extends React.Component {
         this.handleAddLabel = this.handleAddLabel.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const {fetchLabels} = this.props;
         // 라벨 가져오기 
         fetchLabels();

@@ -1,7 +1,6 @@
 import React from 'react';
 import './MemoList.css';
-import { Input, Table } from 'semantic-ui-react';
-import * as service from '../../services/API';
+import { Table } from 'semantic-ui-react';
 
 
 class MemoList extends React.Component {
@@ -17,7 +16,7 @@ class MemoList extends React.Component {
   }
 
   render() {
-    const { memos, error, pending } = this.props;
+    const { memos } = this.props;
     return (
       <div className="MemoList">
         <MemoItems memos= { memos }/>
@@ -47,7 +46,7 @@ function MemoItems(props) {
     <Table>
       <Table.Header>
       <Table.Row>
-        <Table.HeaderCell >Memo</Table.HeaderCell>
+        <Table.HeaderCell >MemoList</Table.HeaderCell>
       </Table.Row>
     </Table.Header>
       <Table.Body>

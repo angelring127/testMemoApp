@@ -1,0 +1,10 @@
+.Memo {
+    width: 40%;
+    height: 100%;
+    display: inline-block;
+    border-right-style: solid;
+  }
+
+.dated {
+    text-align: right;
+}

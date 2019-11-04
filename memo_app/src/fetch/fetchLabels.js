@@ -1,7 +1,16 @@
 import { fetchLabelsPending, fetchLabelsSuccess, fetchLabelsError } from '../store/modules/labels';
+import * as fetchMemos from '../store/modules/memos';
 import * as services from '../services/API';
 
 
+const defaultSuccess = (res,dispatch) => {
+    if (res.error) {
+        throw (res.error);
+    }
+    dispatch(fetchLabels());
+    return res.data;
+}
+// 라벨  갱신
 export const fetchLabels = () => {
     return dispatch => {
         dispatch(fetchLabelsPending());
@@ -19,16 +28,13 @@ export const fetchLabels = () => {
     }
 }
 
+// 라벨 추가 
 export const addLabel = (title) => {
     return dispatch => {
         dispatch(fetchLabelsPending());
         services.addLabel(title).
             then(function(res){
-                if (res.error) {
-                    throw (res.error);
-                }
-                dispatch(fetchLabels());
-                return res.data;
+                defaultSuccess(res,dispatch);
             })
             .catch(error => {
                 dispatch(fetchLabelsError(error));
@@ -36,16 +42,13 @@ export const addLabel = (title) => {
     }
 }
 
+// 라벨 삭제
 export const deleteLabel = (id) => {
     return dispatch => {
         dispatch(fetchLabelsPending());
         services.deleteLabel(id).
             then(function(res) {
-                if (res.error) {
-                    throw (res.error);
-                }
-                dispatch(fetchLabels());
-                return res.data;
+                defaultSuccess(res, dispatch);
             })
             .catch(error => {
                 dispatch(fetchLabelsError(error));
@@ -53,6 +56,7 @@ export const deleteLabel = (id) => {
     }
 }
 
+// 라벨 선택
 export const getLabel = (id) => {
     return dispatch => {
         dispatch(fetchLabelsPending());
@@ -61,7 +65,8 @@ export const getLabel = (id) => {
                 if (res.error) {
                     throw (res.error);
                 }
-                console.log(res);
+                // 메모 갱신
+                dispatch(fetchMemos.fetchMemosSuccess(res.data.memos));
                 return res.data;
             })
             .catch(error => {

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import * as storeMemos from '../store/modules/memos'
 
 import * as apiMemos from '../fetch/fetchMemos';
+import * as apiLabels from '../fetch/fetchLabels';
 
 class MemosContainer extends React.Component {
     constructor(props) {
@@ -18,12 +19,12 @@ class MemosContainer extends React.Component {
     }
 
     render() {
-        const {memos, error, pending, getMemo, isCreateMemo} = this.props;
+        const {memos, labels, error, pending, getMemo, isCreateMemo, setLabel} = this.props;
         const handlePack = {
-            getMemo, isCreateMemo
+            getMemo, isCreateMemo, setLabel
         };
         return (
-            <MemoList memos={memos} error={error} pending= {pending} handlePack={handlePack}/>
+            <MemoList memos={memos} labels={labels} error={error} pending= {pending} handlePack={handlePack}/>
         )
     }
 
@@ -35,12 +36,14 @@ const mapStateToProps = state => ({
     pending: state.memos.pending,
     memos: state.memos.memos,
     error: state.memos.error,
+    labels: state.labels.labels,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     fetchMemos: apiMemos.fetchMemos,
     getMemo: apiMemos.getMemo,
     isCreateMemo: storeMemos.isCreateMemo,
+    setLabel: apiLabels.setLabel,
 }, dispatch)
 
 // 컴포넌트에 리덕스 스토어를 연동해줄 때에는 connect 함수 사용 

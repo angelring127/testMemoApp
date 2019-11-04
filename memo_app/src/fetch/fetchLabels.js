@@ -74,3 +74,19 @@ export const getLabel = (id) => {
             })
     }
 }
+
+// 메모 라벨 설정
+export const setLabel = (id,memoIds) => {
+    return dispatch => {
+        dispatch(fetchLabelsPending());
+        services.setLabel(id,memoIds)
+            .then(function(res){
+                console.log(res);
+                dispatch(fetchLabels());
+                return res.data;
+            })
+            .catch(error => {
+                dispatch(fetchLabelsError(error));
+            })
+    }   
+}

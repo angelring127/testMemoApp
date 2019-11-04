@@ -47,3 +47,10 @@ export const addLabel = (title) => {
 export const deleteLabel = (id) => {
   return axios.delete(baseURL + labels + '/' + id);
 }
+
+export const setLabel = (id, data) => {
+  const memoIds = JSON.stringify(data);
+  return axios.post(baseURL + labels + '/' + id + '/' + memos, {
+    memoIds
+  });
+}

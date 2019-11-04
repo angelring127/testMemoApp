@@ -1,16 +1,21 @@
 import React from 'react';
 import './MemoList.css';
-import { Table, Button, Checkbox, TableCell } from 'semantic-ui-react';
+import { Table, Button, Checkbox, TableCell, Modal, Select } from 'semantic-ui-react';
 
 
 class MemoList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedMemo: []
+      selectedMemo: [],
+      open: false,
+      selectedLabel: null,
     };
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.show = this.show.bind(this);
+    this.close= this.close.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
   shouldComponentRender() {
@@ -21,11 +26,10 @@ class MemoList extends React.Component {
 
   handleInputChange = (event) => {
     const target = event.target;
-    if (target.type) {
+    if (target.type === 'checkbox') {
       if(target.checked) {
         this.setState(state => {
           const selectedMemo = [...state.selectedMemo,target.id];
-          console.log(selectedMemo);
           return {
             ...state,
             selectedMemo: selectedMemo
@@ -36,21 +40,61 @@ class MemoList extends React.Component {
           const selectedMemo = state.selectedMemo.filter(function(id){
             return target.id === id ? false : true;
           });
-          console.log(selectedMemo);
           return {
             ...state,
             selectedMemo: selectedMemo
           };
         });
       }
-    }
+    } else if (target.type == 'submit') {
+      if(this.state.selectedLabel !== null && this.state.selectedMemo.length > 0) {
+        const { handlePack } = this.props;
+        handlePack.setLabel(this.state.selectedLabel,this.state.selectedMemo);
+      }
+      this.setState({ open: false })
+    } 
   }
 
+  handleSelect = (event, {value}) => {
+    this.setState({selectedLabel:value});
+    console.log(this.state);
+  }
+
+  show = () => this.setState({ open: true })
+  close = () => this.setState({ open: false })
+
   render() {
-    const { memos, handlePack } = this.props;
+    const { open } = this.state
+    const { memos, handlePack, labels } = this.props;
+    const labelOptions = labels.map(function (label) {
+      return {
+        key: label._id,
+        value: label._id,
+        text: label.title
+      }
+    });
+    
     return (
       <div className="MemoList">
-        <MemoItems memos= { memos } handlePack={handlePack} handleInputChange={this.handleInputChange} />
+        <MemoItems memos= { memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
+        <Modal size='mini' open={open} onClose={this.close}>
+          <Modal.Header>Setting Label</Modal.Header>
+          <Modal.Content>
+            <p>메모에 라벨을 설정하시겠습니까?</p>
+            <Select placeholder='Select Label' options={labelOptions} onChange={this.handleSelect}/>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={this.close}>No</Button>
+            <Button
+              positive
+              icon='checkmark'
+              labelPosition='right'
+              content='Yes'
+              onClick={this.handleInputChange}
+              name='setLabel'
+            />
+          </Modal.Actions>
+        </Modal>
       </div>
     );
   }
@@ -61,7 +105,7 @@ function MemoItem(props) {
   const {title} = props.memo;
   return (
     <Table.Row>
-      <TableCell width='1'><Checkbox onChange={props.handleInputChange}  id={props.memo._id} /></TableCell>
+      <TableCell width='1'><Checkbox onChange={props.handleInputChange}  id={props.memo._id} name='checkbox' /></TableCell>
       <Table.Cell width='16' onClick={e => props.handleGetMemo(props.memo._id)}>
         {title}
       </Table.Cell>
@@ -84,6 +128,9 @@ function MemoItems(props) {
           <Button icon='plus' 
                   className='right floated mini'
                   onClick= {e => props.handlePack.isCreateMemo(true)}/>
+          <Button icon='setting'
+                  className='right floated mini'
+                  onClick={props.showModal}/>
         </Table.HeaderCell>
       </Table.Row>
     </Table.Header>

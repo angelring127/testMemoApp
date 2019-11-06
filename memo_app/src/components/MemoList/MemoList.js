@@ -10,6 +10,8 @@ class MemoList extends React.Component {
       selectedMemo: [],
       open: false,
       selectedLabel: null,
+      modalTitle: 'Setting Label',
+      modalComment: '메모에 라벨을 설정하시겠습니까?',
     };
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -60,7 +62,7 @@ class MemoList extends React.Component {
     console.log(this.state);
   }
 
-  show = () => this.setState({ open: true })
+  show = () => this.setState({ open: true, })
   close = () => this.setState({ open: false })
 
   render() {
@@ -73,15 +75,16 @@ class MemoList extends React.Component {
         text: label.title
       }
     });
+    const selectList = <Select placeholder='Select Label' options={labelOptions} onChange={this.handleSelect}/>;
     
     return (
       <div className="MemoList">
         <MemoItems memos= { memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
         <Modal size='mini' open={open} onClose={this.close}>
-          <Modal.Header>Setting Label</Modal.Header>
+          <Modal.Header>{this.state.modalTitle}</Modal.Header>
           <Modal.Content>
-            <p>메모에 라벨을 설정하시겠습니까?</p>
-            <Select placeholder='Select Label' options={labelOptions} onChange={this.handleSelect}/>
+            <p>{ this.state.modalComment }</p>
+            { selectList }
           </Modal.Content>
           <Modal.Actions>
             <Button negative onClick={this.close}>No</Button>
@@ -125,12 +128,15 @@ function MemoItems(props) {
       <Table.Row>
         <Table.HeaderCell colSpan='2' >MemoList 
           {/* 새로운 메모 등록 화면 이동 */}
-          <Button icon='plus' 
-                  className='right floated mini'
-                  onClick= {e => props.handlePack.isCreateMemo(true)}/>
+          <Button icon='delete'
+                  className='right floated mini red'
+                  onClick={props.showModal}/>
           <Button icon='setting'
                   className='right floated mini'
                   onClick={props.showModal}/>
+          <Button icon='plus' 
+                  className='right floated mini'
+                  onClick= {e => props.handlePack.isCreateMemo(true)}/>
         </Table.HeaderCell>
       </Table.Row>
     </Table.Header>

@@ -3,6 +3,15 @@ import axios from 'axios';
 const baseURL = 'http://localhost:3000/';
 const memos = 'memos';
 const labels = 'labels';
+const axiosApi = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  },
+  responseType: 'json'
+})
+
 
 export const getMemos = () => {
   return axios.get(baseURL + memos);
@@ -49,8 +58,8 @@ export const deleteLabel = (id) => {
 }
 
 export const setLabel = (id, data) => {
-  const memoIds = JSON.stringify(data);
-  return axios.post(baseURL + labels + '/' + id + '/' + memos, {
-    memoIds
-  });
+  const param = { memoIds : data };
+  const jsonPram = JSON.stringify(param);
+  return axiosApi.post(labels + '/' + id + '/' + memos, jsonPram);
 }
+  

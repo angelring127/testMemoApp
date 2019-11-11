@@ -27,6 +27,14 @@ const initialState = {
     currentMemo: null,
     isCreateMemo: false,
     isEdit: false,
+    modalTitle: {
+        0: "Setting Label",
+        1: "Delete Label",
+    },
+    modalMessage: {
+        0: "메모에 라벨을 설정하시겠습니까",
+        1: "메모를 삭제 하시겠습니까?"
+    },
 }
 
 export default function memos(state = initialState, action) {

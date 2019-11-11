@@ -1,4 +1,5 @@
 import * as storeMemos from '../store/modules/memos';
+import * as fetchLabels from '../fetch/fetchLabels';
 import * as services from '../services/API';
 
 const setMemo = (res, dispatch) => {
@@ -77,6 +78,27 @@ export const deleteMemo = (id) => {
                 dispatch(storeMemos.isCreateMemo(false));
                 dispatch(storeMemos.getMemo(null))
                 dispatch(fetchMemos());
+            })
+            .catch(error => {
+                dispatch(storeMemos.fetchMemosError(error));
+            })
+    }
+}
+
+// 라벨에서 선택된 메모 삭제 
+export const deleteMemos = (labelId,memoIds) => {
+    return dispatch => {
+        dispatch(storeMemos.fetchMemosPending());
+        services.deleteMemos(labelId, memoIds) 
+            .then(function(res){
+                if (res.error) {
+                    throw (res.error);
+                }
+
+                dispatch(fetchLabels.fetchLabels());
+                dispatch(fetchMemos());
+                dispatch(storeMemos.isCreateMemo(false));
+
             })
             .catch(error => {
                 dispatch(storeMemos.fetchMemosError(error));

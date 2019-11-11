@@ -19,7 +19,8 @@ export const addLabel = title => ({
 const initialState = {
     pending: false,
     labels: [],
-    error: null
+    error: null,
+    selectedLabels: null
 }
 
 export default function labels(state = initialState, action) {

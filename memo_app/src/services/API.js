@@ -61,7 +61,14 @@ export const deleteLabel = (id) => {
 // 메모 설정
 export const setLabel = (id, data) => {
   const param = { memoIds : data };
-  const jsonPram = JSON.stringify(param);
-  return axiosApi.post(labels + '/' + id + '/' + memos, jsonPram);
+  const jsonParam = JSON.stringify(param);
+  return axiosApi.post(labels + '/' + id + '/' + memos, jsonParam);
+}
+
+// 선택된 메모 삭제 
+export const deleteMemos = (labelId, memoIds) => {
+  const param = { memoIds : memoIds};
+  const jsonParam = JSON.stringify(param);
+  return axiosApi.post(labels + '/' + labelId + '/' + memos, jsonParam);
 }
   

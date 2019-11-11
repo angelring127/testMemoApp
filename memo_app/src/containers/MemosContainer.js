@@ -19,12 +19,12 @@ class MemosContainer extends React.Component {
     }
 
     render() {
-        const {memos, labels, error, pending, getMemo, isCreateMemo, setLabel} = this.props;
+        const {memosStore, labels, error, pending, getMemo, isCreateMemo, setLabel, deleteMemos} = this.props;
         const handlePack = {
-            getMemo, isCreateMemo, setLabel
+            getMemo, isCreateMemo, setLabel, deleteMemos
         };
         return (
-            <MemoList memos={memos} labels={labels} error={error} pending= {pending} handlePack={handlePack}/>
+            <MemoList memosStore={memosStore} labels={labels} error={error} pending= {pending} handlePack={handlePack}/>
         )
     }
 
@@ -33,9 +33,7 @@ class MemosContainer extends React.Component {
 
 // props로 넣어줄 스토어 상태값 
 const mapStateToProps = state => ({
-    pending: state.memos.pending,
-    memos: state.memos.memos,
-    error: state.memos.error,
+    memosStore : state.memos,
     labels: state.labels.labels,
 });
 
@@ -44,6 +42,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     getMemo: apiMemos.getMemo,
     isCreateMemo: storeMemos.isCreateMemo,
     setLabel: apiLabels.setLabel,
+    deleteMemos: apiMemos.deleteMemos,
 }, dispatch)
 
 // 컴포넌트에 리덕스 스토어를 연동해줄 때에는 connect 함수 사용 

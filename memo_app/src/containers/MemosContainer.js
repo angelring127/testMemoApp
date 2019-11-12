@@ -19,12 +19,12 @@ class MemosContainer extends React.Component {
     }
 
     render() {
-        const {memosStore, labels, error, pending, getMemo, isCreateMemo, setLabel, deleteMemos} = this.props;
+        const {memosStore, labelsStore, error, pending, getMemo, isCreateMemo, setLabel, deleteMemos} = this.props;
         const handlePack = {
             getMemo, isCreateMemo, setLabel, deleteMemos
         };
         return (
-            <MemoList memosStore={memosStore} labels={labels} error={error} pending= {pending} handlePack={handlePack}/>
+            <MemoList memosStore={memosStore} labelsStore={labelsStore} error={error} pending= {pending} handlePack={handlePack}/>
         )
     }
 
@@ -34,7 +34,7 @@ class MemosContainer extends React.Component {
 // props로 넣어줄 스토어 상태값 
 const mapStateToProps = state => ({
     memosStore : state.memos,
-    labels: state.labels.labels,
+    labelsStore: state.labels
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

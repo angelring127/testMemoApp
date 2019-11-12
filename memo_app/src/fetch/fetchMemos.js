@@ -91,6 +91,7 @@ export const deleteMemos = (labelId,memoIds) => {
         dispatch(storeMemos.fetchMemosPending());
         services.deleteMemos(labelId, memoIds) 
             .then(function(res){
+                console.log(res);
                 if (res.error) {
                     throw (res.error);
                 }

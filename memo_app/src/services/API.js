@@ -69,6 +69,8 @@ export const setLabel = (id, data) => {
 export const deleteMemos = (labelId, memoIds) => {
   const param = { memoIds : memoIds};
   const jsonParam = JSON.stringify(param);
-  return axiosApi.post(labels + '/' + labelId + '/' + memos, jsonParam);
+  console.log(jsonParam);
+  
+  return axios.delete(baseURL + labels + '/' + labelId + '/' + memos, {memoIds: JSON.stringify(memoIds)});
 }
   

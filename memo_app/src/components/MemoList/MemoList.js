@@ -49,16 +49,14 @@ class MemoList extends React.Component {
         });
       }
     } else if (target.type === 'submit') {
+      const { handlePack, labelsStore } = this.props;
       if(this.state.selectedLabel !== null && this.state.selectedMemo.length > 0) {
-        const { handlePack } = this.props;
-        console.log('submit');
         if ( this.state.modal === 0 ) {
-          console.log('setting');
           handlePack.setLabel(this.state.selectedLabel,this.state.selectedMemo);
-        } else {
-          handlePack.deleteMemos(this.state.selectedLabel,this.state.selectedMemo);
         }
-        
+      } else if (this.state.selectedMemo.length > 0) {
+        console.log('delete');
+        handlePack.deleteMemos(labelsStore.selectedLabelId,this.state.selectedMemo);
       }
       this.setState({ open: false })
     } 
@@ -72,10 +70,11 @@ class MemoList extends React.Component {
   show = (modalValue) => this.setState({ open: true, modal: modalValue })
   close = () => this.setState({ open: false })
 
+  // Render
   render() {
     const { open } = this.state
-    const { memosStore, handlePack, labels } = this.props;
-    const labelOptions = labels.map(function (label) {
+    const { memosStore, handlePack, labelsStore } = this.props;
+    const labelOptions = labelsStore.labels.map(function (label) {
       return {
         key: label._id,
         value: label._id,
@@ -86,7 +85,7 @@ class MemoList extends React.Component {
     
     return (
       <div className="MemoList">
-        <MemoItems memos= { memosStore.memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
+        <MemoItems selectedLabelId={labelsStore.selectedLabelId} memos= { memosStore.memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
         <Modal size='mini' open={open} onClose={this.close}>
           <Modal.Header>{memosStore.modalTitle[this.state.modal]}</Modal.Header>
           <Modal.Content>
@@ -129,15 +128,15 @@ function MemoItems(props) {
   const memoList = memos.map((memo) =>
     <MemoItem key={memo._id} memo={memo} handleGetMemo={props.handlePack.getMemo} handleInputChange={props.handleInputChange} />
   );
+  const btnDelete = props.selectedLabelId !== null ? 
+    <Button icon='delete' className='right floated mini red' onClick={() => props.showModal(1)}/> : null ;
   return (
     <Table>
       <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan='2' >MemoList 
           {/* 새로운 메모 등록 화면 이동 */}
-          <Button icon='delete'
-                  className='right floated mini red'
-                  onClick={() => props.showModal(1)}/>
+          { btnDelete }
           <Button icon='setting'
                   className='right floated mini'
                   onClick={() => props.showModal(0)} />

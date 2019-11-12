@@ -9,6 +9,7 @@ class LabelList extends React.Component {
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.handleAddLabel = this.handleAddLabel.bind(this);
     this.updateTitle = this.updateTitle.bind(this);
+    this.handleSetTotal = this.handleSetTotal.bind(this);
   }
 
   updateTitle = title => {
@@ -28,6 +29,12 @@ class LabelList extends React.Component {
 
   }
 
+  handleSetTotal = () => {
+    const { handlePack } = this.props;
+    handlePack.setLabelId();
+    handlePack.fetchMemos();
+  }
+
   shouldComponentRender() {
     const { pending } = this.props;
     if (this.pending === false) return false;
@@ -35,7 +42,7 @@ class LabelList extends React.Component {
   }
 
   render() {
-    const { labels, handleDeleteLabel, handleGetLabel, handleFetchMemos, totalMemoLength } = this.props;
+    const { labels, handlePack, totalMemoLength } = this.props;
     if (!this.shouldComponentRender()) {
       return (
         <div className="LabelList">
@@ -48,9 +55,8 @@ class LabelList extends React.Component {
           handleAddLabel={this.handleAddLabel}
           updateTitle={this.updateTitle}
           title={this.state.title}
-          handleDeleteLabel={handleDeleteLabel}
-          handleGetLabel={handleGetLabel} 
-          handleFetchMemos={handleFetchMemos}
+          handlePack={handlePack}
+          handleSetTotal={this.handleSetTotal}
           totalMemoLength={totalMemoLength}
           />
       </div>
@@ -78,8 +84,8 @@ function LabelItems(props) {
       id={label._id}
       title={label.title}
       length={label.memos.length}
-      handleDeleteLabel={props.handleDeleteLabel}
-      handleGetLabel={props.handleGetLabel} />
+      handleDeleteLabel={props.handlePack.deleteLabel}
+      handleGetLabel={props.handlePack.getLabel} />
   );
   return (
     <Table>
@@ -92,11 +98,11 @@ function LabelItems(props) {
         <Table.Row>
           <Table.Cell>
             <Input onChange={e => props.updateTitle(e.target.value)} value={props.title} />
-            <Button onClick={props.handleAddLabel} primary>입력</Button>
+            <Button onClick={props.handlePack.handleAddLabel} primary>입력</Button>
           </Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell onClick={e => props.handleFetchMemos()}>
+          <Table.Cell onClick={props.handleSetTotal}>
             {/* 전체 메모 */}
             Total({props.totalMemoLength})
           </Table.Cell>

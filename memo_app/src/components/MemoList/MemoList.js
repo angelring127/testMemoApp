@@ -1,9 +1,16 @@
 import React from 'react';
 import './MemoList.css';
+import MemoItems from './MemoItems';
 import { Table, Button, Checkbox, TableCell, Modal, Select } from 'semantic-ui-react';
 
 
-
+/* 
+* 메모리스트 컴포턴트
+* 각 라벨,전체, 메모 리스트를 표시
+*
+*
+*
+*/
 class MemoList extends React.Component {  
   constructor(props) {
     super(props);
@@ -29,6 +36,7 @@ class MemoList extends React.Component {
   handleInputChange = (event) => {
     const target = event.target;
     if (target.type === 'checkbox') {
+      // 체크유무에 따라 selectedMemo에 넣음
       if(target.checked) {
         this.setState(state => {
           const selectedMemo = [...state.selectedMemo,target.id];
@@ -51,11 +59,12 @@ class MemoList extends React.Component {
     } else if (target.type === 'submit') {
       const { handlePack, labelsStore } = this.props;
       if(this.state.selectedLabel !== null && this.state.selectedMemo.length > 0) {
+        // 체크한 리스트 선택된 라벨에 넣음
         if ( this.state.modal === 0 ) {
           handlePack.setLabel(this.state.selectedLabel,this.state.selectedMemo);
         }
       } else if (this.state.selectedMemo.length > 0) {
-        console.log('delete');
+        // 체크한 리스트 라벨에서 삭제
         handlePack.deleteMemos(labelsStore.selectedLabelId,this.state.selectedMemo);
       }
       this.setState({ open: false })
@@ -107,50 +116,6 @@ class MemoList extends React.Component {
       </div>
     );
   }
-}
-
-// 메모
-function MemoItem(props) {
-  const {title} = props.memo;
-  return (
-    <Table.Row>
-      <TableCell width='1'><Checkbox onChange={props.handleInputChange}  id={props.memo._id} name='checkbox' /></TableCell>
-      <Table.Cell width='16' onClick={e => props.handleGetMemo(props.memo._id)}>
-        {title}
-      </Table.Cell>
-    </Table.Row>
-  );
-}
-
-// 메모 리스트 
-function MemoItems(props) {
-  const memos = props.memos;
-  const memoList = memos.map((memo) =>
-    <MemoItem key={memo._id} memo={memo} handleGetMemo={props.handlePack.getMemo} handleInputChange={props.handleInputChange} />
-  );
-  const btnDelete = props.selectedLabelId !== null ? 
-    <Button icon='delete' className='right floated mini red' onClick={() => props.showModal(1)}/> : null ;
-  return (
-    <Table>
-      <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell colSpan='2' >MemoList 
-          {/* 새로운 메모 등록 화면 이동 */}
-          { btnDelete }
-          <Button icon='setting'
-                  className='right floated mini'
-                  onClick={() => props.showModal(0)} />
-          <Button icon='plus' 
-                  className='right floated mini'
-                  onClick= {e => props.handlePack.isCreateMemo(true)}/>
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Header>
-      <Table.Body>
-        {memoList}
-      </Table.Body>
-    </Table>
-  );
 }
 
 export default MemoList;

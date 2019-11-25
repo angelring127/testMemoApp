@@ -57,6 +57,7 @@ export const addMemo = (memo) => {
         dispatch(storeMemos.fetchMemosPending());
         services.addMemo(memo.title, memo.content)
             .then(function(res){
+                console.log(res);
                 setMemo(res,dispatch);
             })
             .catch(error => {

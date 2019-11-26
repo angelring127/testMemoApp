@@ -5,3 +5,5 @@
 ## DB
 
  - https://github.com/dramancompany/memoapp-api
+
+## 2019.11.26 마지막 수정

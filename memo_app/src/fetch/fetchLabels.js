@@ -1,5 +1,5 @@
 import * as storeLabels from '../store/modules/labels';
-import * as fetchMemos from '../store/modules/memos';
+import * as storeMemos from '../store/modules/memos';
 import * as services from '../services/API';
 
 
@@ -10,6 +10,19 @@ const defaultSuccess = (res,dispatch) => {
     dispatch(fetchLabels());
     return res.data;
 }
+
+// 메모에 체크항목 추가
+const insertChecked = (res,dispatch) => {
+    if (typeof res.data.memos !== 'undefined' && res.data.memos.length > 0) {
+        // 라벨의 메모에 체크 여부를 설정한다.
+        const memos = res.data.memos.map(function(memo){
+            memo.checked = false;
+            return memo;
+        });
+        dispatch(storeMemos.fetchMemosSuccess(memos));
+    }
+}
+
 // 라벨  갱신
 export const fetchLabels = () => {
     return dispatch => {
@@ -65,8 +78,8 @@ export const getLabel = (id) => {
                 if (res.error) {
                     throw (res.error);
                 }
-                // 메모 갱신
-                dispatch(fetchMemos.fetchMemosSuccess(res.data.memos));
+                
+                insertChecked(res, dispatch);
                 dispatch(storeLabels.setLabel(id));
                 return res.data;
             })

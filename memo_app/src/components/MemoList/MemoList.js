@@ -15,7 +15,6 @@ class MemoList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedMemo: [],
       open: false,
       selectedLabel: null,
       modal: 0,
@@ -33,39 +32,36 @@ class MemoList extends React.Component {
     return true;
   }
 
+  /**
+   * 메모 다중선택, 라벨에 다중 메모 입력, 라벨에서 다중 메모 삭제
+    */
   handleInputChange = (event) => {
     const target = event.target;
+    const { handlePack, labelsStore, memosStore } = this.props;
+
     if (target.type === 'checkbox') {
-      // 체크유무에 따라 selectedMemo에 넣음
-      if(target.checked) {
-        this.setState(state => {
-          const selectedMemo = [...state.selectedMemo,target.id];
-          return {
-            ...state,
-            selectedMemo: selectedMemo
-          };
-        });
-      } else {
-        this.setState(state => {
-          const selectedMemo = state.selectedMemo.filter(function(id){
-            return target.id === id ? false : true;
-          });
-          return {
-            ...state,
-            selectedMemo: selectedMemo
-          };
-        });
-      }
+      // 체크 설정
+      const currentMemoList = memosStore.memos.map(function(memo){
+        if (target.checked) {
+          memo.checked = memo._id === target.id ? true : memo.checked;
+        } else {
+          memo.checked = memo._id === target.id ? false : memo.checked;
+        }
+        return memo;
+      });
+      handlePack.fetchMemosSuccess(currentMemoList);
+
     } else if (target.type === 'submit') {
-      const { handlePack, labelsStore } = this.props;
-      if(this.state.selectedLabel !== null && this.state.selectedMemo.length > 0) {
+      const selectedMemoIdList = memosStore.memos.filter(memo => memo.checked).map(memo => memo._id);
+
+      if(this.state.selectedLabel !== null && selectedMemoIdList.length > 0) {
         // 체크한 리스트 선택된 라벨에 넣음
         if ( this.state.modal === 0 ) {
-          handlePack.setLabel(this.state.selectedLabel,this.state.selectedMemo);
+          handlePack.setLabel(this.state.selectedLabel,selectedMemoIdList);
         }
-      } else if (this.state.selectedMemo.length > 0) {
+      } else if (selectedMemoIdList.length > 0) {
         // 체크한 리스트 라벨에서 삭제
-        handlePack.deleteMemos(labelsStore.selectedLabelId,this.state.selectedMemo);
+        handlePack.deleteMemos(labelsStore.selectedLabelId,selectedMemoIdList);
       }
       this.setState({ open: false })
     } 
@@ -79,10 +75,9 @@ class MemoList extends React.Component {
   show = (modalValue) => this.setState({ open: true, modal: modalValue })
   close = () => this.setState({ open: false })
 
-  // Render
   render() {
     const { open } = this.state
-    const { memosStore, handlePack, labelsStore } = this.props;
+    const { memosStore, handlePack, labelsStore, selectedMemoIds } = this.props;
     const labelOptions = labelsStore.labels.map(function (label) {
       return {
         key: label._id,

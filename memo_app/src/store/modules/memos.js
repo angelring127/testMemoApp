@@ -7,6 +7,7 @@ export const GET_MEMO = 'GET_MEMO';
 export const ADD_MEMO = "ADD_MEMO";
 export const IS_CREATE_MEMO = 'CREATE_MEMO';
 export const IS_EDIT_MEMO = 'IS_EDIT_MEMO';
+export const SET_SELECTED_MEMOIDS = 'SET_SELECTED_MEMOIDS';
 
 //  액션 생성함수 정의 
 export const fetchMemosPending = () => ({ type: FETCH_MEMOS_PENDING });
@@ -17,6 +18,7 @@ export const totalMemos = total => ({type: TOTAL_MEMOS, payload: { total }});
 export const isCreateMemo = (isCreateMemo) => ({ type: IS_CREATE_MEMO, payload: { isCreateMemo}});
 export const isEditMemo = (isEditMemo) => ({ type: IS_EDIT_MEMO, payload: { isEditMemo }});
 export const getMemo = memo => ({ type: GET_MEMO, payload: { memo }});
+export const setSelectedMemoIds = memoIds => ({ type: SET_SELECTED_MEMOIDS, payload: { memoIds }});
 
 // 초기상태 정의
 const initialState = {
@@ -35,6 +37,9 @@ const initialState = {
         0: "메모에 라벨을 설정하시겠습니까",
         1: "메모를 삭제 하시겠습니까?"
     },
+    selectedMemoIds: [
+            // memolist에서 선택된 메모 리스트
+    ]
 }
 
 export default function memos(state = initialState, action) {
@@ -75,6 +80,11 @@ export default function memos(state = initialState, action) {
             return {
                 ...state,
                 isEditMemo: action.payload.isEditMemo
+            }
+        case SET_SELECTED_MEMOIDS:
+            return {
+                ...state,
+                selectedMemoIds: action.payload.memoIds
             }
         default:
             return state;

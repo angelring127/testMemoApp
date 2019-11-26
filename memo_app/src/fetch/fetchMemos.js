@@ -11,6 +11,17 @@ const setMemo = (res, dispatch) => {
     dispatch(fetchMemos());
     dispatch(storeMemos.isEditMemo(false));
 }
+// 메모에 체크항목 추가
+const insertChecked = (res,dispatch) => {
+    if (typeof res.data !== 'undefined' && res.data.length > 0) {
+        // 라벨의 메모에 체크 여부를 설정한다.
+        const memos = res.data.map(function(memo){
+            memo.checked = false;
+            return memo;
+        });
+        dispatch(storeMemos.fetchMemosSuccess(memos));
+    }
+}
 
 // 메모 전체 리스트 
 export const fetchMemos = () => {
@@ -21,7 +32,7 @@ export const fetchMemos = () => {
                 if (res.error) {
                     throw (res.error);
                 }
-                dispatch(storeMemos.fetchMemosSuccess(res.data));
+                insertChecked(res, dispatch);
                 dispatch(storeMemos.totalMemos(res.data.length));
                 return res.data;
             })

@@ -48,9 +48,12 @@ export default function labels(state = initialState, action) {
             return {
                 ...state,
                 pending: false,
-                selectedLabelId: action.payload.labelId === undefined ? null : action.payload.labelId
+                selectedLabelId: action.payload.labelId === undefined ? null : action.payload.labelId,
+                labels: state.labels.map(function(label){
+                    label.selected = label._id === action.payload.labelId;
+                    return label;
+                })
             }
-        
         default:
             return state;
     }

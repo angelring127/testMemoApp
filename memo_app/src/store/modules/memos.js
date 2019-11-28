@@ -53,7 +53,7 @@ export default function memos(state = initialState, action) {
             return {
                 ...state,   
                 pending: false,
-                memos: action.memos
+                memos: typeof action.memos !== 'undefined' ? action.memos : []
             }
         case FETCH_MEMOS_ERROR:
             return {

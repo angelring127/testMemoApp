@@ -42,7 +42,7 @@ class LabelList extends React.Component {
   }
 
   render() {
-    const { labels, handlePack, totalMemoLength } = this.props;
+    const { labelStore, handlePack, totalMemoLength } = this.props;
     if (!this.shouldComponentRender()) {
       return (
         <div className="LabelList">
@@ -51,7 +51,7 @@ class LabelList extends React.Component {
     }
     return (
       <div className="LabelList">
-        <LabelItems labels={labels}
+        <LabelItems labelStore={labelStore}
           handleAddLabel={this.handleAddLabel}
           updateTitle={this.updateTitle}
           title={this.state.title}
@@ -68,8 +68,8 @@ class LabelList extends React.Component {
 function LabelItem(props) {
   return (
     <Table.Row>
-      <Table.Cell className='active' onClick={e => props.handleGetLabel(props.id)}>
-        <span>{props.title}({props.length})</span>
+      <Table.Cell className={props.label.selected ? 'active' : ''} onClick={e => props.handleGetLabel(props.label._id)}>
+        <span>{props.label.title}({props.length})</span>
         <Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus' className='right floated mini red'/>
       </Table.Cell>
     </Table.Row>
@@ -78,15 +78,17 @@ function LabelItem(props) {
 
 // 라벨 리스트
 function LabelItems(props) {
-  const labels = props.labels;
+  const labels = props.labelStore.labels;
+  // 라벨중에 선택된게 없으면 전체가 선택되었음을 의미한다.
+  const selectedTotal = labels.filter(label => label.selected).length === 0;
   const labelList = labels.map((label) =>
     <LabelItem key={label._id}
-      id={label._id}
-      title={label.title}
+      label={label}
       length={label.memos.length}
       handleDeleteLabel={props.handlePack.deleteLabel}
       handleGetLabel={props.handlePack.getLabel} />
   );
+  
   return (
     <Table>
       <Table.Header>
@@ -102,7 +104,7 @@ function LabelItems(props) {
           </Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell onClick={props.handleSetTotal}>
+          <Table.Cell className={selectedTotal ? 'active':''} onClick={props.handleSetTotal}>
             {/* 전체 메모 */}
             Total({props.totalMemoLength})
           </Table.Cell>

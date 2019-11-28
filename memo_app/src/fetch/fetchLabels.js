@@ -7,7 +7,7 @@ const defaultSuccess = (res,dispatch) => {
     if (res.error) {
         throw (res.error);
     }
-    dispatch(fetchLabels());
+    dispatch(fetchLabels()); 
     return res.data;
 }
 
@@ -20,6 +20,8 @@ const insertChecked = (res,dispatch) => {
             return memo;
         });
         dispatch(storeMemos.fetchMemosSuccess(memos));
+    } else {
+        dispatch(storeMemos.fetchMemosSuccess());
     }
 }
 
@@ -32,7 +34,14 @@ export const fetchLabels = () => {
                 if (res.error) {
                     throw (res.error);
                 }
-                dispatch(storeLabels.fetchLabelsSuccess(res.data));
+                if (typeof res.data !== 'undefined' && res.data.length > 0) {
+                    // LabelList에 selected를 추가
+                    const labelList = res.data.map(function(label){
+                        label.selected = false;
+                        return label;
+                    });
+                    dispatch(storeLabels.fetchLabelsSuccess(labelList));
+                }
                 return res.data;
             })
             .catch(error => {

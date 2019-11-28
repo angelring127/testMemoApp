@@ -26,13 +26,13 @@ class LabelsContainer extends React.Component {
     }
 
     render() {
-        const {labels, total, error, pending, deleteLabel, getLabel, fetchMemos, setLabelId} = this.props;
+        const {labelStore, total, error, pending, deleteLabel, getLabel, fetchMemos, setLabelId} = this.props;
         const handleAddLabel = this.handleAddLabel;
         const handlePack = {
             deleteLabel, getLabel, fetchMemos, setLabelId , handleAddLabel
         };
         return (
-            <LabelList labels={labels} 
+            <LabelList labelStore={labelStore} 
                         error={error} 
                         pending={pending}  
                         handlePack={handlePack}
@@ -46,7 +46,7 @@ class LabelsContainer extends React.Component {
 // props로 넣어줄 스토어 상태값 
 const mapStateToProps = state => ({
     pending: state.labels.pending,
-    labels: state.labels.labels,
+    labelStore: state.labels,
     error: state.labels.error,
     // 전체 메모 갯수
     total: state.memos.total,

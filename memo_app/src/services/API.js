@@ -3,54 +3,81 @@ import axios from 'axios';
 const baseURL = 'http://localhost:3000/';
 const memos = 'memos';
 const labels = 'labels';
+const axiosApi = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  },
+  responseType: 'json'
+})
 
+// 메모 갱신
 export const getMemos = () => {
-  return axios.get(baseURL + memos);
+  return axiosApi.get(memos);
 }
 
 export const addMemo = (title, content) => {
-  return axios.post(baseURL + memos, {
+  return axiosApi.post(memos, {
     title: title,
     content: content
   });
 }
 
+// 하나의 메모 습득
 export const getMemo = (id) => {
-  return axios.get(baseURL + memos + '/' + id);
+  return axiosApi.get(memos + '/' + id);
 }
 
 export const updateMemo = (id, title, content) => {
-  return axios.put(baseURL + memos + '/' + id, {
+  return axiosApi.put(memos + '/' + id, {
     title: title,
     content: content
   });
 }
 
 export const deleteMemo = (id) => {
-  return axios.delete(baseURL + memos + '/' + id);
+  return axiosApi.delete(memos + '/' + id);
 }
 
 export const getLabels = () => {
-  return axios.get(baseURL + labels);
+  return axiosApi.get(labels);
 }
 
 export const getLabel = (id) => {
-  return axios.get(baseURL + labels + '/' + id);
+  return axiosApi.get(labels + '/' + id);
 }
 
 export const addLabel = (title) => {
-  return axios.post(baseURL + labels, {
+  return axiosApi.post(labels, {
     title: title
   });
 }
 
 export const deleteLabel = (id) => {
-  return axios.delete(baseURL + labels + '/' + id);
+  return axiosApi.delete(labels + '/' + id);
 }
 
+// 메모 설정
 export const setLabel = (id, data) => {
-  const memoIds = JSON.stringify(data);
-  return axios.post(baseURL + labels + '/' + id + '/' + memos, {
-    memoIds
-  });
+  const param = { memoIds : data };
+  const jsonParam = JSON.stringify(param);
+  return axiosApi.post(labels + '/' + id + '/' + memos, jsonParam);
 }
+
+/** 
+* label에서 메모들 삭제
+* params : String labelId, Array memoIds
+* return : axios
+*/
+export const deleteMemos = (labelId, memoIds) => {
+  const param = { memoIds : memoIds};
+  const jsonParam = JSON.stringify(param);
+  
+  return axiosApi.delete(labels + '/' + labelId + '/' + memos, 
+    {
+      data : jsonParam
+    }
+  );
+}
+  

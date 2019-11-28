@@ -9,6 +9,7 @@ class LabelList extends React.Component {
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.handleAddLabel = this.handleAddLabel.bind(this);
     this.updateTitle = this.updateTitle.bind(this);
+    this.handleSetTotal = this.handleSetTotal.bind(this);
   }
 
   updateTitle = title => {
@@ -28,6 +29,12 @@ class LabelList extends React.Component {
 
   }
 
+  handleSetTotal = () => {
+    const { handlePack } = this.props;
+    handlePack.setLabelId();
+    handlePack.fetchMemos();
+  }
+
   shouldComponentRender() {
     const { pending } = this.props;
     if (this.pending === false) return false;
@@ -35,7 +42,7 @@ class LabelList extends React.Component {
   }
 
   render() {
-    const { labels, handleDeleteLabel, handleGetLabel, handleFetchMemos, totalMemoLength } = this.props;
+    const { labelStore, handlePack, totalMemoLength } = this.props;
     if (!this.shouldComponentRender()) {
       return (
         <div className="LabelList">
@@ -44,13 +51,12 @@ class LabelList extends React.Component {
     }
     return (
       <div className="LabelList">
-        <LabelItems labels={labels}
+        <LabelItems labelStore={labelStore}
           handleAddLabel={this.handleAddLabel}
           updateTitle={this.updateTitle}
           title={this.state.title}
-          handleDeleteLabel={handleDeleteLabel}
-          handleGetLabel={handleGetLabel} 
-          handleFetchMemos={handleFetchMemos}
+          handlePack={handlePack}
+          handleSetTotal={this.handleSetTotal}
           totalMemoLength={totalMemoLength}
           />
       </div>
@@ -62,8 +68,8 @@ class LabelList extends React.Component {
 function LabelItem(props) {
   return (
     <Table.Row>
-      <Table.Cell className='active' onClick={e => props.handleGetLabel(props.id)}>
-        <span>{props.title}({props.length})</span>
+      <Table.Cell className={props.label.selected ? 'active' : ''} onClick={e => props.handleGetLabel(props.label._id)}>
+        <span>{props.label.title}({props.length})</span>
         <Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus' className='right floated mini red'/>
       </Table.Cell>
     </Table.Row>
@@ -72,15 +78,17 @@ function LabelItem(props) {
 
 // 라벨 리스트
 function LabelItems(props) {
-  const labels = props.labels;
+  const labels = props.labelStore.labels;
+  // 라벨중에 선택된게 없으면 전체가 선택되었음을 의미한다.
+  const selectedTotal = labels.filter(label => label.selected).length === 0;
   const labelList = labels.map((label) =>
     <LabelItem key={label._id}
-      id={label._id}
-      title={label.title}
+      label={label}
       length={label.memos.length}
-      handleDeleteLabel={props.handleDeleteLabel}
-      handleGetLabel={props.handleGetLabel} />
+      handleDeleteLabel={props.handlePack.deleteLabel}
+      handleGetLabel={props.handlePack.getLabel} />
   );
+  
   return (
     <Table>
       <Table.Header>
@@ -92,11 +100,11 @@ function LabelItems(props) {
         <Table.Row>
           <Table.Cell>
             <Input onChange={e => props.updateTitle(e.target.value)} value={props.title} />
-            <Button onClick={props.handleAddLabel} primary>입력</Button>
+            <Button onClick={props.handlePack.handleAddLabel} primary>입력</Button>
           </Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell onClick={e => props.handleFetchMemos()}>
+          <Table.Cell className={selectedTotal ? 'active':''} onClick={props.handleSetTotal}>
             {/* 전체 메모 */}
             Total({props.totalMemoLength})
           </Table.Cell>

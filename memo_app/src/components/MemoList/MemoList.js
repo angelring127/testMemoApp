@@ -1,15 +1,23 @@
 import React from 'react';
 import './MemoList.css';
+import MemoItems from './MemoItems';
 import { Table, Button, Checkbox, TableCell, Modal, Select } from 'semantic-ui-react';
 
 
-class MemoList extends React.Component {
+/* 
+* 메모리스트 컴포턴트
+* 각 라벨,전체, 메모 리스트를 표시
+*
+*
+*
+*/
+class MemoList extends React.Component {  
   constructor(props) {
     super(props);
     this.state = {
-      selectedMemo: [],
       open: false,
       selectedLabel: null,
+      modal: 0,
     };
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -17,39 +25,43 @@ class MemoList extends React.Component {
     this.close= this.close.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
   }
-
+  
   shouldComponentRender() {
     const { pending } = this.props;
     if (pending === false) return false;
     return true;
   }
 
+  /**
+   * 메모 다중선택, 라벨에 다중 메모 입력, 라벨에서 다중 메모 삭제
+    */
   handleInputChange = (event) => {
     const target = event.target;
+    const { handlePack, labelsStore, memosStore } = this.props;
+
     if (target.type === 'checkbox') {
-      if(target.checked) {
-        this.setState(state => {
-          const selectedMemo = [...state.selectedMemo,target.id];
-          return {
-            ...state,
-            selectedMemo: selectedMemo
-          };
-        });
-      } else {
-        this.setState(state => {
-          const selectedMemo = state.selectedMemo.filter(function(id){
-            return target.id === id ? false : true;
-          });
-          return {
-            ...state,
-            selectedMemo: selectedMemo
-          };
-        });
-      }
-    } else if (target.type == 'submit') {
-      if(this.state.selectedLabel !== null && this.state.selectedMemo.length > 0) {
-        const { handlePack } = this.props;
-        handlePack.setLabel(this.state.selectedLabel,this.state.selectedMemo);
+      // 체크 설정
+      const currentMemoList = memosStore.memos.map(function(memo){
+        if (target.checked) {
+          memo.checked = memo._id === target.id ? true : memo.checked;
+        } else {
+          memo.checked = memo._id === target.id ? false : memo.checked;
+        }
+        return memo;
+      });
+      handlePack.fetchMemosSuccess(currentMemoList);
+
+    } else if (target.type === 'submit') {
+      const selectedMemoIdList = memosStore.memos.filter(memo => memo.checked).map(memo => memo._id);
+
+      if(this.state.selectedLabel !== null && selectedMemoIdList.length > 0) {
+        // 체크한 리스트 선택된 라벨에 넣음
+        if ( this.state.modal === 0 ) {
+          handlePack.setLabel(this.state.selectedLabel,selectedMemoIdList);
+        }
+      } else if (selectedMemoIdList.length > 0) {
+        // 체크한 리스트 라벨에서 삭제
+        handlePack.deleteMemos(labelsStore.selectedLabelId,selectedMemoIdList);
       }
       this.setState({ open: false })
     } 
@@ -57,31 +69,32 @@ class MemoList extends React.Component {
 
   handleSelect = (event, {value}) => {
     this.setState({selectedLabel:value});
-    console.log(this.state);
   }
 
-  show = () => this.setState({ open: true })
+  // modal handler
+  show = (modalValue) => this.setState({ open: true, modal: modalValue })
   close = () => this.setState({ open: false })
 
   render() {
     const { open } = this.state
-    const { memos, handlePack, labels } = this.props;
-    const labelOptions = labels.map(function (label) {
+    const { memosStore, handlePack, labelsStore, selectedMemoIds } = this.props;
+    const labelOptions = labelsStore.labels.map(function (label) {
       return {
         key: label._id,
         value: label._id,
         text: label.title
       }
     });
+    const selectList = <Select placeholder='Select Label' options={labelOptions} onChange={this.handleSelect}/>;
     
     return (
       <div className="MemoList">
-        <MemoItems memos= { memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
+        <MemoItems selectedLabelId={labelsStore.selectedLabelId} memos= { memosStore.memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
         <Modal size='mini' open={open} onClose={this.close}>
-          <Modal.Header>Setting Label</Modal.Header>
+          <Modal.Header>{memosStore.modalTitle[this.state.modal]}</Modal.Header>
           <Modal.Content>
-            <p>메모에 라벨을 설정하시겠습니까?</p>
-            <Select placeholder='Select Label' options={labelOptions} onChange={this.handleSelect}/>
+            <p>{ memosStore.modalMessage[this.state.modal]}</p>
+            { (this.state.modal === 0) ? selectList : null  }
           </Modal.Content>
           <Modal.Actions>
             <Button negative onClick={this.close}>No</Button>
@@ -98,47 +111,6 @@ class MemoList extends React.Component {
       </div>
     );
   }
-}
-
-// 메모
-function MemoItem(props) {
-  const {title} = props.memo;
-  return (
-    <Table.Row>
-      <TableCell width='1'><Checkbox onChange={props.handleInputChange}  id={props.memo._id} name='checkbox' /></TableCell>
-      <Table.Cell width='16' onClick={e => props.handleGetMemo(props.memo._id)}>
-        {title}
-      </Table.Cell>
-    </Table.Row>
-  );
-}
-
-// 메모 리스트 
-function MemoItems(props) {
-  const memos = props.memos;
-  const memoList = memos.map((memo) =>
-    <MemoItem key={memo._id} memo={memo} handleGetMemo={props.handlePack.getMemo} handleInputChange={props.handleInputChange} />
-  );
-  return (
-    <Table>
-      <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell colSpan='2' >MemoList 
-          {/* 새로운 메모 등록 화면 이동 */}
-          <Button icon='plus' 
-                  className='right floated mini'
-                  onClick= {e => props.handlePack.isCreateMemo(true)}/>
-          <Button icon='setting'
-                  className='right floated mini'
-                  onClick={props.showModal}/>
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Header>
-      <Table.Body>
-        {memoList}
-      </Table.Body>
-    </Table>
-  );
 }
 
 export default MemoList;

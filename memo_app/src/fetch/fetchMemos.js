@@ -1,4 +1,5 @@
 import * as storeMemos from '../store/modules/memos';
+import * as fetchLabels from '../fetch/fetchLabels';
 import * as services from '../services/API';
 
 const setMemo = (res, dispatch) => {
@@ -10,6 +11,17 @@ const setMemo = (res, dispatch) => {
     dispatch(fetchMemos());
     dispatch(storeMemos.isEditMemo(false));
 }
+// 메모에 체크항목 추가
+const insertChecked = (res,dispatch) => {
+    if (typeof res.data !== 'undefined' && res.data.length > 0) {
+        // 라벨의 메모에 체크 여부를 설정한다.
+        const memos = res.data.map(function(memo){
+            memo.checked = false;
+            return memo;
+        });
+        dispatch(storeMemos.fetchMemosSuccess(memos));
+    }
+}
 
 // 메모 전체 리스트 
 export const fetchMemos = () => {
@@ -20,7 +32,7 @@ export const fetchMemos = () => {
                 if (res.error) {
                     throw (res.error);
                 }
-                dispatch(storeMemos.fetchMemosSuccess(res.data));
+                insertChecked(res, dispatch);
                 dispatch(storeMemos.totalMemos(res.data.length));
                 return res.data;
             })
@@ -56,6 +68,7 @@ export const addMemo = (memo) => {
         dispatch(storeMemos.fetchMemosPending());
         services.addMemo(memo.title, memo.content)
             .then(function(res){
+                console.log(res);
                 setMemo(res,dispatch);
             })
             .catch(error => {
@@ -77,6 +90,28 @@ export const deleteMemo = (id) => {
                 dispatch(storeMemos.isCreateMemo(false));
                 dispatch(storeMemos.getMemo(null))
                 dispatch(fetchMemos());
+            })
+            .catch(error => {
+                dispatch(storeMemos.fetchMemosError(error));
+            })
+    }
+}
+
+// 라벨에서 선택된 메모 삭제 
+export const deleteMemos = (labelId,memoIds) => {
+    return dispatch => {
+        dispatch(storeMemos.fetchMemosPending());
+        services.deleteMemos(labelId, memoIds) 
+            .then(function(res){
+                console.log(res);
+                if (res.error) {
+                    throw (res.error);
+                }
+
+                dispatch(fetchLabels.fetchLabels());
+                dispatch(fetchMemos());
+                dispatch(storeMemos.isCreateMemo(false));
+
             })
             .catch(error => {
                 dispatch(storeMemos.fetchMemosError(error));

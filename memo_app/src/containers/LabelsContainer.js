@@ -6,6 +6,8 @@ import { bindActionCreators } from 'redux';
 import * as apiLabels from '../fetch/fetchLabels';
 import * as apiMemos from '../fetch/fetchMemos';
 
+import * as storeLabels from '../store/modules/labels';
+
 class LabelsContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -24,15 +26,16 @@ class LabelsContainer extends React.Component {
     }
 
     render() {
-        const {labels, total, error, pending, deleteLabel, getLabel, fetchMemos} = this.props;
+        const {labelStore, total, error, pending, deleteLabel, getLabel, fetchMemos, setLabelId} = this.props;
+        const handleAddLabel = this.handleAddLabel;
+        const handlePack = {
+            deleteLabel, getLabel, fetchMemos, setLabelId , handleAddLabel
+        };
         return (
-            <LabelList labels={labels} 
+            <LabelList labelStore={labelStore} 
                         error={error} 
                         pending={pending}  
-                        handleAddLabel={this.handleAddLabel}
-                        handleDeleteLabel={deleteLabel}
-                        handleGetLabel={getLabel}
-                        handleFetchMemos={fetchMemos}
+                        handlePack={handlePack}
                         totalMemoLength = {total} />
         )
     }
@@ -43,7 +46,7 @@ class LabelsContainer extends React.Component {
 // props로 넣어줄 스토어 상태값 
 const mapStateToProps = state => ({
     pending: state.labels.pending,
-    labels: state.labels.labels,
+    labelStore: state.labels,
     error: state.labels.error,
     // 전체 메모 갯수
     total: state.memos.total,
@@ -58,6 +61,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     getLabel: apiLabels.getLabel,
     // 전체 메모 갱신
     fetchMemos: apiMemos.fetchMemos,
+    setLabelId: storeLabels.setLabel,
 }, dispatch)
 
 // 컴포넌트에 리덕스 스토어를 연동해줄 때에는 connect 함수 사용 

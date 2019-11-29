@@ -2,6 +2,8 @@ import * as storeMemos from '../store/modules/memos';
 import * as fetchLabels from '../fetch/fetchLabels';
 import * as services from '../services/API';
 
+
+// 메모갱신
 const setMemo = (res, dispatch) => {
     if(res.error) {
         throw (res.error);
@@ -70,6 +72,8 @@ export const addMemo = (memo) => {
             .then(function(res){
                 console.log(res);
                 setMemo(res,dispatch);
+                // 라벨 상태 갱신
+                dispatch(fetchLabels.fetchLabels());
             })
             .catch(error => {
                 dispatch(storeMemos.fetchMemosError(error));
@@ -90,6 +94,8 @@ export const deleteMemo = (id) => {
                 dispatch(storeMemos.isCreateMemo(false));
                 dispatch(storeMemos.getMemo(null))
                 dispatch(fetchMemos());
+                // 라벨 상태 갱신
+                dispatch(fetchLabels.fetchLabels());
             })
             .catch(error => {
                 dispatch(storeMemos.fetchMemosError(error));

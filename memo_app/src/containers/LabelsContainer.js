@@ -11,7 +11,6 @@ import * as storeLabels from '../store/modules/labels';
 class LabelsContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.handleAddLabel = this.handleAddLabel.bind(this);
     }
 
     componentDidMount() {
@@ -20,16 +19,10 @@ class LabelsContainer extends React.Component {
         fetchLabels();
     }
 
-    handleAddLabel = (title) => {
-        const {addLabel} = this.props
-        let res = addLabel(title);
-    }
-
     render() {
-        const {labelStore, total, error, pending, deleteLabel, getLabel, fetchMemos, setLabelId} = this.props;
-        const handleAddLabel = this.handleAddLabel;
+        const {labelStore, total, error, pending, deleteLabel, getLabel, fetchMemos, setLabelId, addLabel} = this.props;
         const handlePack = {
-            deleteLabel, getLabel, fetchMemos, setLabelId , handleAddLabel
+            deleteLabel, getLabel, fetchMemos, setLabelId , addLabel
         };
         return (
             <LabelList labelStore={labelStore} 

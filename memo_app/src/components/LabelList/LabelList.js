@@ -20,7 +20,7 @@ class LabelList extends React.Component {
     if (this.state.title === "") {
       console.log("입력해주세요");
     } else {
-      this.props.handleAddLabel(this.state.title);
+      this.props.handlePack.addLabel(this.state.title);
       this.setState({ title: "" });
     }
   }
@@ -70,7 +70,7 @@ function LabelItem(props) {
     <Table.Row>
       <Table.Cell className={props.label.selected ? 'active' : ''} onClick={e => props.handleGetLabel(props.label._id)}>
         <span>{props.label.title}({props.length})</span>
-        <Button onClick={e => props.handleDeleteLabel(props.id)} icon='minus' className='right floated mini red'/>
+        <Button onClick={e => props.handleDeleteLabel(props.label._id)} icon='minus' className='right floated mini red'/>
       </Table.Cell>
     </Table.Row>
   );
@@ -100,7 +100,7 @@ function LabelItems(props) {
         <Table.Row>
           <Table.Cell>
             <Input onChange={e => props.updateTitle(e.target.value)} value={props.title} />
-            <Button onClick={props.handlePack.handleAddLabel} primary>입력</Button>
+            <Button style= {{marginLeft: 10 + 'px'}} onClick={props.handleAddLabel} primary>입력</Button>
           </Table.Cell>
         </Table.Row>
         <Table.Row>

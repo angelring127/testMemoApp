@@ -8,8 +8,6 @@ import { Table, Button, Checkbox, TableCell, Modal, Select } from 'semantic-ui-r
 * 메모리스트 컴포턴트
 * 각 라벨,전체, 메모 리스트를 표시
 *
-*
-*
 */
 class MemoList extends React.Component {  
   constructor(props) {
@@ -89,7 +87,7 @@ class MemoList extends React.Component {
     
     return (
       <div className="MemoList">
-        <MemoItems selectedLabelId={labelsStore.selectedLabelId} memos= { memosStore.memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
+        <MemoItems labelsStore={labelsStore} memos= { memosStore.memos } handlePack={handlePack} handleInputChange={this.handleInputChange} showModal={this.show}/>
         <Modal size='mini' open={open} onClose={this.close}>
           <Modal.Header>{memosStore.modalTitle[this.state.modal]}</Modal.Header>
           <Modal.Content>

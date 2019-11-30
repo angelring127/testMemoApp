@@ -5,16 +5,21 @@ import { Table, Button, Checkbox, TableCell, Modal, Select } from 'semantic-ui-r
 // 메모 리스트 
 function MemoItems(props) {
     const memos = props.memos;
+    const labelTitle = () => {
+      const selectedLbel = props.labelsStore.labels.filter(label => label._id == props.labelsStore.selectedLabelId);
+      return selectedLbel.length == 1 ? ' : ' +selectedLbel[0].title : '';
+    };
     const memoList = memos.map((memo) =>
       <MemoItem key={memo._id} memo={memo} handleGetMemo={props.handlePack.getMemo} handleInputChange={props.handleInputChange} />
     );
-    const btnDelete = props.selectedLabelId !== null ? 
+    const btnDelete = props.labelsStore.selectedLabelId !== null ? 
       <Button icon='delete' className='right floated mini red' onClick={() => props.showModal(1)}/> : null ;
+    
     return (
       <Table>
         <Table.Header>
         <Table.Row>
-          <Table.HeaderCell colSpan='2' >MemoList 
+          <Table.HeaderCell colSpan='2' >MemoList { labelTitle() }
             {/* 새로운 메모 등록 화면 이동 */}
             { btnDelete }
             <Button icon='setting'

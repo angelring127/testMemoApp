@@ -100,7 +100,7 @@ function LabelItems(props) {
         <Table.Row>
           <Table.Cell>
             <Input onChange={e => props.updateTitle(e.target.value)} value={props.title} />
-            <Button onClick={props.handleAddLabel} primary>입력</Button>
+            <Button style= {{marginLeft: 10 + 'px'}} onClick={props.handleAddLabel} primary>입력</Button>
           </Table.Cell>
         </Table.Row>
         <Table.Row>
